@@ -2,7 +2,27 @@
 import requests
 from bs4 import BeautifulSoup
 
-BASE_URL = 'http://www.amul.com'
+HOST = 'http://www.amul.com'
+BASE_URL = HOST + '/m/amul-hits'
+
+def get_img_urls(year_page):
+    "Gets image URLs of all topicals in the given page"
+    soup = BeautifulSoup(year_page, 'html.parser')
+    htable = soup.find('table')
+    heading = htable.find('strong').text
+    print
+    print heading
+    print "================="
+    table = htable.findNext('table')
+    anchors = table.findAll('a')
+    img_urls = {}
+    for anchor in anchors:
+        print 'Caption: ' + anchor['title']
+        print 'URL: ' + HOST + anchor['href']
+        print 'Alt: ' + anchor.find('img')['alt']
+        print
+        # img_urls[anchor.find('img')['src'][-8:]] = anchor['href']
+    # print img_urls
 
 def get_year_urls(page):
     "Gets URLs of all years for which topicals are available"
@@ -21,5 +41,9 @@ def fetch_url(url):
     return r.content
 
 if __name__ == "__main__":
-    page = fetch_url(BASE_URL + '/m/amul-hits')
+    page = fetch_url(BASE_URL)
     year_urls = get_year_urls(page)
+    # print year_urls
+    for name, url in year_urls.iteritems():
+        year_page = fetch_url(BASE_URL + url)
+        img_urls = get_img_urls(year_page)
