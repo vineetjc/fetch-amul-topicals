@@ -8,24 +8,30 @@ BASE_URL = HOST + '/m/amul-hits'
 
 def get_year_topicals(year_page):
     "Gets image URLs of all topicals in the given page"
-    soup = BeautifulSoup(year_page, 'html.parser')
-    htable = soup.find('table')
-    heading = htable.find('strong').text
-    print
-    print heading
-    # print "================="
-    table = htable.findNext('table')
-    anchors = table.findAll('a')
     topicals = {}
     i = 0
-    for anchor in anchors:
-        topicals[i] = {
-            'caption': anchor['title'],
-            'url': HOST + anchor['href'],
-            'alt': anchor.find('img')['alt']
-        }
-        i = i + 1
-    return topicals
+    j = 0
+    while True:
+        try:
+            year_page = fetch_url(BASE_URL + url + '&l='+str(j)) #next 10 records
+            soup = BeautifulSoup(year_page, 'html.parser')
+            htable = soup.find('table')
+            heading = htable.find('strong').text
+            # print "================="
+            table = htable.findNext('table')
+            anchors = table.findAll('a')
+            for anchor in anchors:
+                topicals[i] = {
+                    'caption': anchor['title'],
+                    'url': HOST + anchor['href'],
+                    'alt': anchor.find('img')['alt']
+                }
+                i = i + 1
+            print heading + ' page %d' %(j+1) #prints if the page was successfully accessed
+            print
+        except: #after last page; i.e. next page is empty
+            return topicals
+        j+=1
 
 def get_year_urls(page):
     "Gets URLs of all years for which topicals are available"
@@ -47,6 +53,7 @@ if __name__ == "__main__":
     page = fetch_url(BASE_URL)
     year_urls = get_year_urls(page)
     # print year_urls
+    print
     d = {}
     for name, url in year_urls.iteritems():
         year_page = fetch_url(BASE_URL + url)
