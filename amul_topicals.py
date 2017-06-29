@@ -26,13 +26,12 @@ def get_year_topicals(year_page):
                     'url': HOST + anchor['href'],
                     'alt': anchor.find('img')['alt']
                 }
-                i = i + 1            
+                i = i + 1
             print heading + ' page %d' %(j+1) #prints if the page was successfully accessed
             print
         except: #after last page; i.e. next page is empty
-            return topicals        
+            return topicals
         j+=1
-    
 
 def get_year_urls(page):
     "Gets URLs of all years for which topicals are available"
