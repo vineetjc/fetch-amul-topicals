@@ -18,9 +18,9 @@ def get_year_topicals(year_page,location):
     soup = BeautifulSoup(year_page, 'html.parser')
     htable = soup.find('table')
     heading = htable.find('strong').text
-    choice = get_UserYesOrNo("Do you wish to download images of - "+heading+"?", ['y','n'])
+    choice = get_user_yes_or_no("Do you wish to download images of - "+heading+"?", ['y','n'])
     if choice=='y':
-        location = MakeFolderInDirectory(location,heading)
+        location = make_folder_in_directory(location,heading)
 
     while True:
         try:
@@ -68,14 +68,14 @@ def fetch_url(url):
     r = requests.get(url)
     return r.content
 
-def get_UserYesOrNo(message, options):
+def get_user_yes_or_no(message, options):
     """User Interaction: Input string message and list of options, returns user choice"""
     choice = raw_input(message + " ("+"/".join(map(str,options))+") :").lower()
     while choice.lower() not in options:
-        choice=get_UserYesOrNo(message, options)
+        choice=get_user_yes_or_no(message, options)
     return choice
 
-def MakeFolderInDirectory(location,foldername):
+def make_folder_in_directory(location,foldername):
     """Make new folder called <foldername> in the given location; returns the directory of folder"""
     location=location.rstrip('/') #removing any slashes at the end if user has put it
     location=location.rstrip("\\")
@@ -88,25 +88,25 @@ def MakeFolderInDirectory(location,foldername):
     location = location + "/" + foldername
     return location #since modification above; also because folder is to be accessed in the next step
 
-def OpenFolder(location):
+def open_folder(location):
     """Opens the folder at the location; works only for Windows, Mac, Linux"""
     platforms=['win32','linux2','darwin']
     current_platform=sys.platform
     if current_platform not in platforms:
         return
-    query = get_UserYesOrNo("Do you wish to view the folder?", ['y','n'])
-    if query=='y':        
+    query = get_user_yes_or_no("Do you wish to view the folder?", ['y','n'])
+    if query=='y':
         #linux
         if current_platform=='linux2':
             os.system('xdg-open "%s"' % location)
         #mac
-        elif current_platform=='darwin':    
+        elif current_platform=='darwin':
             os.system('open "%s"' % location)
         #windows
         elif current_platform=='win32':
             os.startfile(location)
         return
- 
+
 
 if __name__ == "__main__":
     page = fetch_url(BASE_URL)
@@ -116,7 +116,7 @@ if __name__ == "__main__":
     d = {}
 
     #asking user to enter location to save files
-    choice = get_UserYesOrNo("Save images in current working directory? (a new folder will be created in current directory)", ['y','n'])    
+    choice = get_user_yes_or_no("Save images in current working directory? (a new folder will be created in current directory)", ['y','n'])
     if choice.lower() == 'y':
         location = CWD #storing images in current working directory (default)
     elif choice.lower() == 'n':
@@ -125,8 +125,8 @@ if __name__ == "__main__":
         while not os.path.isdir(location):
             location = raw_input("Not a valid directory, please enter again:")
     #make new folder called 'Amul Topicals' in the directory; files will be stored in this folder
-    location = MakeFolderInDirectory(location, 'Amul Topicals')    
-    
+    location = make_folder_in_directory(location, 'Amul Topicals')
+
     for name, url in year_urls.iteritems():
         year_page = fetch_url(BASE_URL + url)
         per_year = get_year_topicals(year_page,location)
@@ -135,4 +135,4 @@ if __name__ == "__main__":
     print json_data
 
     #if user wants to view folder right away
-    OpenFolder(location)
+    open_folder(location)
