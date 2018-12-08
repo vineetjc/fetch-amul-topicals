@@ -21,36 +21,35 @@ def get_year_topicals(year_page,location):
     choice = get_user_yes_or_no("Do you wish to download images of - "+heading+"?", ['y','n'])
     if choice=='y':
         location = make_folder_in_directory(location,heading)
-
-    while True:
-        try:
-            year_page = fetch_url(BASE_URL + url + '&l='+str(j)) #next 10 records
-            soup = BeautifulSoup(year_page, 'html.parser')
-            htable = soup.find('table')
-            heading = htable.find('strong').text
-            # print "================="
-            table = htable.findNext('table')
-            anchors = table.findAll('a')
-            for anchor in anchors:
-                topicals[i] = {
-                    'caption': anchor['title'],
-                    'url': HOST + anchor['href'],
-                    'alt': anchor.find('img')['alt']
-                }
-                if choice=='y':
-                    filename= location + "/"+topicals[i]['url'].split('/')[-1]
-                    if os.path.exists(filename):
-                        print filename+ ' already exists'
-                    else:
-                        print filename
-                        urllib.urlretrieve(topicals[i]['url'], filename)
-                i = i + 1
-            print
-            print heading + ' page %d successfully accessed.' %(j+1) #prints if the page was successfully accessed
-            print
-        except: #after last page; i.e. next page is empty
-            return topicals
-        j = j + 1
+        while True:
+            try:
+                year_page = fetch_url(BASE_URL + url + '&l='+str(j)) #next 10 records
+                soup = BeautifulSoup(year_page, 'html.parser')
+                htable = soup.find('table')
+                heading = htable.find('strong').text
+                # print "================="
+                table = htable.findNext('table')
+                anchors = table.findAll('a')
+                for anchor in anchors:
+                    topicals[i] = {
+                        'caption': anchor['title'],
+                        'url': HOST + anchor['href'],
+                        'alt': anchor.find('img')['alt']
+                    }
+                    if choice=='y':
+                        filename= location + "/"+topicals[i]['url'].split('/')[-1]
+                        if os.path.exists(filename):
+                            print filename+ ' already exists'
+                        else:
+                            print filename
+                            urllib.urlretrieve(topicals[i]['url'], filename)
+                    i = i + 1
+                print
+                print heading + ' page %d successfully accessed.' %(j+1) #prints if the page was successfully accessed
+                print
+            except: #after last page; i.e. next page is empty
+                return topicals
+            j = j + 1
 
 def get_year_urls(page):
     "Gets URLs of all years for which topicals are available"
@@ -127,12 +126,12 @@ if __name__ == "__main__":
     #make new folder called 'Amul Topicals' in the directory; files will be stored in this folder
     location = make_folder_in_directory(location, 'Amul Topicals')
 
-    for name, url in year_urls.iteritems():
+    for name, url in sorted(year_urls.iteritems()):
         year_page = fetch_url(BASE_URL + url)
         per_year = get_year_topicals(year_page,location)
         d[url[3:]] = per_year
     json_data = json.dumps(d, sort_keys=True, indent=4, separators=(',', ': '))
-    print json_data
+    #print json_data
 
     #if user wants to view folder right away
     open_folder(location)
