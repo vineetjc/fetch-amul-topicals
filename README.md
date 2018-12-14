@@ -6,7 +6,7 @@
 A Python script that fetches details all ‘topicals’ across all years from the Amul website (http://www.amul.com/m/amul-hits) and has the feature to download the pictures by year into your local system
 
 ## Amul Website
-![AMUL website screenshot][images/amul.png]
+![AMUL website screenshot](images/amul.png)
 
 ## Executing the Code
-![Terminal Output][images/terminal.png]
+![Terminal Output](images/terminal.png)
