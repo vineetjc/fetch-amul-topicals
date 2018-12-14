@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import json, requests, urllib, os, sys
+from builtins import input
 from bs4 import BeautifulSoup
 
 HOST = 'http://www.amul.com'
@@ -39,13 +40,13 @@ def get_year_topicals(year_page,location):
                     if choice=='y':
                         filename= location + "/"+topicals[i]['url'].split('/')[-1]
                         if os.path.exists(filename):
-                            print filename+ ' already exists'
+                            print(filename+ ' already exists')
                         else:
-                            print filename
+                            print(filename)
                             urllib.urlretrieve(topicals[i]['url'], filename)
                     i = i + 1
                 print
-                print heading + ' page %d successfully accessed.' %(j+1) #prints if the page was successfully accessed
+                print (heading + ' page %d successfully accessed.' %(j+1)) #prints if the page was successfully accessed
                 print
             except: #after last page; i.e. next page is empty
                 return topicals
@@ -69,7 +70,7 @@ def fetch_url(url):
 
 def get_user_yes_or_no(message, options):
     """User Interaction: Input string message and list of options, returns user choice"""
-    choice = raw_input(message + " ("+"/".join(map(str,options))+") :").lower()
+    choice = input(message + " ("+"/".join(map(str,options))+") :").lower()
     while choice.lower() not in options:
         choice=get_user_yes_or_no(message, options)
     return choice
@@ -79,10 +80,10 @@ def make_folder_in_directory(location,foldername):
     location=location.rstrip('/') #removing any slashes at the end if user has put it
     location=location.rstrip("\\")
     if not os.path.exists(location+"/"+foldername):
-        print "A folder called " + "'" +foldername+"'"+" has been created in "+location
+        print ("A folder called " + "'" +foldername+"'"+" has been created in "+location)
         os.makedirs(location+"/"+foldername) #slash is provided here
     else:
-        print "Folder "+ "'"+foldername+"'"+" is already present in "+location+"; proceeding to next step..."
+        print ("Folder "+ "'"+foldername+"'"+" is already present in "+location+"; proceeding to next step...")
     print
     location = location + "/" + foldername
     return location #since modification above; also because folder is to be accessed in the next step
@@ -120,13 +121,13 @@ if __name__ == "__main__":
         location = CWD #storing images in current working directory (default)
     elif choice.lower() == 'n':
         #asking user for entering directory
-        location = raw_input("Enter a directory to save images (a new folder will be created in the directory mentioned):")
+        location = input("Enter a directory to save images (a new folder will be created in the directory mentioned):")
         while not os.path.isdir(location):
-            location = raw_input("Not a valid directory, please enter again:")
+            location = input("Not a valid directory, please enter again:")
     #make new folder called 'Amul Topicals' in the directory; files will be stored in this folder
     location = make_folder_in_directory(location, 'Amul Topicals')
 
-    for name, url in sorted(year_urls.iteritems()):
+    for name, url in sorted(year_urls.items()):
         year_page = fetch_url(BASE_URL + url)
         per_year = get_year_topicals(year_page,location)
         d[url[3:]] = per_year
