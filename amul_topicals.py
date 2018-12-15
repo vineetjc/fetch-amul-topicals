@@ -1,8 +1,12 @@
 #!/usr/bin/env python
-import json, requests, urllib, os, sys
+import json, requests, os, sys
 from builtins import input
 from bs4 import BeautifulSoup
-
+if sys.version_info[0] >= 3:
+    from urllib.request import urlretrieve
+else:
+    from urllib import urlretrieve
+   
 HOST = 'http://www.amul.com'
 BASE_URL = HOST + '/m/amul-hits'
 
@@ -43,7 +47,7 @@ def get_year_topicals(year_page,location):
                             print(filename+ ' already exists')
                         else:
                             print(filename)
-                            urllib.urlretrieve(topicals[i]['url'], filename)
+                            urlretrieve(topicals[i]['url'], filename)
                     i = i + 1
                 print
                 print (heading + ' page %d successfully accessed.' %(j+1)) #prints if the page was successfully accessed
