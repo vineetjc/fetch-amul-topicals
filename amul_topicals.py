@@ -32,7 +32,6 @@ def get_year_topicals(year_page,location):
                 soup = BeautifulSoup(year_page, 'html.parser')
                 htable = soup.find('table')
                 heading = htable.find('strong').text
-                # print "================="
                 table = htable.findNext('table')
                 anchors = table.findAll('a')
                 for anchor in anchors:
@@ -131,11 +130,44 @@ if __name__ == "__main__":
     #make new folder called 'Amul Topicals' in the directory; files will be stored in this folder
     location = make_folder_in_directory(location, 'Amul Topicals')
 
-    for name, url in sorted(year_urls.items()):
-        year_page = fetch_url(BASE_URL + url)
-        per_year = get_year_topicals(year_page,location)
-        d[url[3:]] = per_year
-    json_data = json.dumps(d, sort_keys=True, indent=4, separators=(',', ': '))
+    # Take users choice of the form of download required.
+    print("How would you like to download the topicals?\n1.Particular Year Topicals Only\n2.All Topicals Yearwise\n")
+    print("Enter choice: ")
+    choice = int(input())
+
+    if choice == 1:
+        #New user chosen year images only
+        print("\nEnter year of the required topicals: ")
+        year_input = int(input())
+        url="?s="+str(year_input)
+        year_available=False
+
+        #Checking whether entered Year is available in amul topical website
+        for name,u in sorted(year_urls.items()):
+            if str(u) == str(url):
+                year_available = True
+                break
+                
+        if year_available:
+            try:
+                year_page = fetch_url(BASE_URL+"?s="+str(year_input))
+                per_year = get_year_topicals(year_page, location)
+            except:
+                print("\nUnknown Error occured! Kindly check network connection.")
+                exit(0)
+        else:
+            print("\nTopicals for the entered year is not available!")
+            exit(0)
+
+    elif choice == 2:
+        # Old method of one by one downloading each years images upon user choice y/n
+        for name, url in sorted(year_urls.items()):
+            year_page = fetch_url(BASE_URL + url)
+            per_year = get_year_topicals(year_page,location)
+            d[url[3:]] = per_year
+        json_data = json.dumps(d, sort_keys=True, indent=4, separators=(',', ': '))
+
+    
     #print json_data
 
     #if user wants to view folder right away
