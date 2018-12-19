@@ -130,11 +130,12 @@ if __name__ == "__main__":
     #make new folder called 'Amul Topicals' in the directory; files will be stored in this folder
     location = make_folder_in_directory(location, 'Amul Topicals')
 
-    c = 'y'
-    while str(c) == 'y':
-        # Take users choice of the form of download required.
-        choice = get_user_choice("\nHow would you like to download the topicals?\n1.Particular Year Topicals Only\n2.All Topicals Yearwise\n",['1','2'])
+    
+    # Take users choice of the form of download required.
+    choice = get_user_choice("\nHow would you like to download the topicals?\n1.Particular Year Topicals Only\n2.All Topicals Yearwise\n",['1','2'])
 
+    c = 'y'
+    while str(c) == 'y': 
         if choice == str(1):
             #New user chosen year images only
             user_catered=False;
@@ -161,16 +162,15 @@ if __name__ == "__main__":
                 else:
                     print("\nTopicals for the entered year is not available!")
                     user_catered=False
-
-        elif choice == str(2):
-            # Old method of one by one downloading each years images upon user choice y/n
-            for name, url in sorted(year_urls.items()):
-                year_page = fetch_url(BASE_URL + url)
-                per_year = get_year_topicals(year_page,location)
-                d[url[3:]] = per_year
-            json_data = json.dumps(d, sort_keys=True, indent=4, separators=(',', ': '))
-
         c = get_user_choice("Would you like to download more topicals? ",['y','n'])
+
+    if choice == str(2):
+        # Old method of one by one downloading each years images upon user choice y/n
+        for name, url in sorted(year_urls.items()):
+            year_page = fetch_url(BASE_URL + url)
+            per_year = get_year_topicals(year_page,location)
+            d[url[3:]] = per_year
+        json_data = json.dumps(d, sort_keys=True, indent=4, separators=(',', ': '))
 
 
     #if user wants to view folder right away
