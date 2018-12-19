@@ -6,7 +6,7 @@ if sys.version_info[0] >= 3:
     from urllib.request import urlretrieve
 else:
     from urllib import urlretrieve
-   
+
 HOST = 'http://www.amul.com'
 BASE_URL = HOST + '/m/amul-hits'
 
@@ -23,7 +23,7 @@ def get_year_topicals(year_page,location):
     soup = BeautifulSoup(year_page, 'html.parser')
     htable = soup.find('table')
     heading = htable.find('strong').text
-    choice = get_user_yes_or_no("Do you wish to download images of - "+heading+"?", ['y','n'])
+    choice = get_user_choice("Do you wish to download images of - "+heading+"?", ['y','n'])
     if choice=='y':
         location = make_folder_in_directory(location,heading)
         while True:
@@ -71,11 +71,11 @@ def fetch_url(url):
     r = requests.get(url)
     return r.content
 
-def get_user_yes_or_no(message, options):
+def get_user_choice(message, options):
     """User Interaction: Input string message and list of options, returns user choice"""
     choice = input(message + " ("+"/".join(map(str,options))+") :").lower()
     while choice.lower() not in options:
-        choice=get_user_yes_or_no(message, options)
+        choice=get_user_choice(message, options)
     return choice
 
 def make_folder_in_directory(location,foldername):
@@ -97,7 +97,7 @@ def open_folder(location):
     current_platform=sys.platform
     if current_platform not in platforms:
         return
-    query = get_user_yes_or_no("Do you wish to view the folder?", ['y','n'])
+    query = get_user_choice("Do you wish to view the folder?", ['y','n'])
     if query=='y':
         #linux
         if current_platform=='linux2':
@@ -119,7 +119,7 @@ if __name__ == "__main__":
     d = {}
 
     #asking user to enter location to save files
-    choice = get_user_yes_or_no("Save images in current working directory? (a new folder will be created in current directory)", ['y','n'])
+    choice = get_user_choice("Save images in current working directory? (a new folder will be created in current directory)", ['y','n'])
     if choice.lower() == 'y':
         location = CWD #storing images in current working directory (default)
     elif choice.lower() == 'n':
