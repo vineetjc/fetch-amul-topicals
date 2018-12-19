@@ -135,33 +135,32 @@ if __name__ == "__main__":
     choice = get_user_choice("\nHow would you like to download the topicals?\n1.Particular Year Topicals Only\n2.All Topicals Yearwise\n",['1','2'])
 
     c = 'y'
-    while str(c) == 'y': 
-        if choice == str(1):
-            #New user chosen year images only
-            user_catered=False;
-            while user_catered == False:
-                print("\nEnter year of the required topicals: ")
-                year_input = int(input())
-                url="?s="+str(year_input)
-                year_available=False
+    while str(c) == 'y' and choice == str(1): 
+        #New user chosen year images only
+        user_catered=False;
+        while user_catered == False:
+            print("\nEnter year of the required topicals: ")
+            year_input = int(input())
+            url="?s="+str(year_input)
+            year_available=False
 
-                #Checking whether entered Year is available in amul topical website
-                for name,u in sorted(year_urls.items()):
-                    if str(u) == str(url):
-                        year_available = True
-                        break
-                        
-                if year_available:
-                    try:
-                        year_page = fetch_url(BASE_URL+"?s="+str(year_input))
-                        per_year = get_year_topicals(year_page, location)
-                    except:
-                        print("\nUnknown Error occured! Kindly check network connection.")
-                        exit(0)
-                    user_catered=True
-                else:
-                    print("\nTopicals for the entered year is not available!")
-                    user_catered=False
+            #Checking whether entered Year is available in amul topical website
+            for name,u in sorted(year_urls.items()):
+                if str(u) == str(url):
+                    year_available = True
+                    break
+                    
+            if year_available:
+                try:
+                    year_page = fetch_url(BASE_URL+"?s="+str(year_input))
+                    per_year = get_year_topicals(year_page, location)
+                except:
+                    print("\nUnknown Error occured! Kindly check network connection.")
+                    exit(0)
+                user_catered=True
+            else:
+                print("\nTopicals for the entered year is not available!")
+                user_catered=False
         c = get_user_choice("Would you like to download more topicals? ",['y','n'])
 
     if choice == str(2):
