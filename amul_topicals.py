@@ -131,35 +131,36 @@ if __name__ == "__main__":
     location = make_folder_in_directory(location, 'Amul Topicals')
 
     # Take users choice of the form of download required.
-    print("How would you like to download the topicals?\n1.Particular Year Topicals Only\n2.All Topicals Yearwise\n")
-    print("Enter choice: ")
-    choice = int(input())
+    choice = get_user_choice("How would you like to download the topicals?\n1.Particular Year Topicals Only\n2.All Topicals Yearwise\n",['1','2'])
 
-    if choice == 1:
+    if choice == str(1):
         #New user chosen year images only
-        print("\nEnter year of the required topicals: ")
-        year_input = int(input())
-        url="?s="+str(year_input)
-        year_available=False
+        user_catered=False;
+        while user_catered == False:
+            print("\nEnter year of the required topicals: ")
+            year_input = int(input())
+            url="?s="+str(year_input)
+            year_available=False
 
-        #Checking whether entered Year is available in amul topical website
-        for name,u in sorted(year_urls.items()):
-            if str(u) == str(url):
-                year_available = True
-                break
-                
-        if year_available:
-            try:
-                year_page = fetch_url(BASE_URL+"?s="+str(year_input))
-                per_year = get_year_topicals(year_page, location)
-            except:
-                print("\nUnknown Error occured! Kindly check network connection.")
-                exit(0)
-        else:
-            print("\nTopicals for the entered year is not available!")
-            exit(0)
+            #Checking whether entered Year is available in amul topical website
+            for name,u in sorted(year_urls.items()):
+                if str(u) == str(url):
+                    year_available = True
+                    break
+                    
+            if year_available:
+                try:
+                    year_page = fetch_url(BASE_URL+"?s="+str(year_input))
+                    per_year = get_year_topicals(year_page, location)
+                except:
+                    print("\nUnknown Error occured! Kindly check network connection.")
+                    exit(0)
+                user_catered=True
+            else:
+                print("\nTopicals for the entered year is not available!")
+                user_catered=False
 
-    elif choice == 2:
+    elif choice == str(2):
         # Old method of one by one downloading each years images upon user choice y/n
         for name, url in sorted(year_urls.items()):
             year_page = fetch_url(BASE_URL + url)
