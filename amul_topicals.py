@@ -145,7 +145,7 @@ if __name__ == "__main__":
     c = 'y'
     while str(c) == 'y' and choice == str(1):
         # New user chosen year images only
-        user_catered = False;
+        user_catered = False
         while user_catered == False:
             print("\nEnter year of the required topicals: ")
             year_input = int(input())
