@@ -1,5 +1,8 @@
 #!/usr/bin/env python
-import json, requests, os, sys
+import json
+import requests
+import os
+import sys
 from builtins import input
 from bs4 import BeautifulSoup
 if sys.version_info[0] >= 3:
@@ -10,25 +13,26 @@ else:
 HOST = 'http://www.amul.com'
 BASE_URL = HOST + '/m/amul-hits'
 
-#current working directory
-CWD=os.getcwd()
+# current working directory
+CWD = os.getcwd()
 
-def get_year_topicals(year_page,location):
+
+def get_year_topicals(year_page, location):
     "Gets image URLs of all topicals in the given page"
     topicals = {}
     i = 0
     j = 0
 
-    #ask user if they wish to download images by year
+    # ask user if they wish to download images by year
     soup = BeautifulSoup(year_page, 'html.parser')
     htable = soup.find('table')
     heading = htable.find('strong').text
-    choice = get_user_choice("Do you wish to download images of - "+heading+"?", ['y','n'])
-    if choice=='y':
-        location = make_folder_in_directory(location,heading)
+    choice = get_user_choice("Do you wish to download images of - "+heading+"?", ['y', 'n'])
+    if choice == 'y':
+        location = make_folder_in_directory(location, heading)
         while True:
             try:
-                year_page = fetch_url(BASE_URL + url + '&l='+str(j)) #next 10 records
+                year_page = fetch_url(BASE_URL + url + '&l='+str(j))  # next 10 records
                 soup = BeautifulSoup(year_page, 'html.parser')
                 htable = soup.find('table')
                 heading = htable.find('strong').text
@@ -40,20 +44,21 @@ def get_year_topicals(year_page,location):
                         'url': HOST + anchor['href'],
                         'alt': anchor.find('img')['alt']
                     }
-                    if choice=='y':
-                        filename= location + "/"+topicals[i]['url'].split('/')[-1]
+                    if choice == 'y':
+                        filename = location + "/"+topicals[i]['url'].split('/')[-1]
                         if os.path.exists(filename):
-                            print(filename+ ' already exists')
+                            print(filename + ' already exists')
                         else:
                             print(filename)
                             urlretrieve(topicals[i]['url'], filename)
                     i = i + 1
                 print
-                print (heading + ' page %d successfully accessed.' %(j+1)) #prints if the page was successfully accessed
+                print (heading + ' page %d successfully accessed.' % (j + 1))  # prints if the page was successfully accessed
                 print
-            except: #after last page; i.e. next page is empty
+            except:  # after last page; i.e. next page is empty
                 return topicals
             j = j + 1
+
 
 def get_year_urls(page):
     "Gets URLs of all years for which topicals are available"
@@ -62,51 +67,55 @@ def get_year_urls(page):
     anchors = table.findAll('a')
     urls = {}
     for anchor in anchors:
-        if anchor.text != '': # ignore img links
+        if anchor.text != '':   # ignore img links
             urls[anchor.text[-4:]] = anchor['href']
     return urls
+
 
 def fetch_url(url):
     "Fetches the page with the given URL and returns the body"
     r = requests.get(url)
     return r.content
 
+
 def get_user_choice(message, options):
     """User Interaction: Input string message and list of options, returns user choice"""
-    choice = input(message + " ("+"/".join(map(str,options))+") :").lower()
+    choice = input(message + " ("+"/".join(map(str, options))+") :").lower()
     while choice.lower() not in options:
-        choice=get_user_choice(message, options)
+        choice = get_user_choice(message, options)
     return choice
 
-def make_folder_in_directory(location,foldername):
+
+def make_folder_in_directory(location, foldername):
     """Make new folder called <foldername> in the given location; returns the directory of folder"""
-    location=location.rstrip('/') #removing any slashes at the end if user has put it
-    location=location.rstrip("\\")
+    location = location.rstrip('/')   # removing any slashes at the end if user has put it
+    location = location.rstrip("\\")
     if not os.path.exists(location+"/"+foldername):
-        print ("A folder called " + "'" +foldername+"'"+" has been created in "+location)
-        os.makedirs(location+"/"+foldername) #slash is provided here
+        print ("A folder called " + "'" + foldername + "'" + " has been created in " + location)
+        os.makedirs(location+"/"+foldername)  # slash is provided here
     else:
-        print ("Folder "+ "'"+foldername+"'"+" is already present in "+location+"; proceeding to next step...")
+        print ("Folder " + "'" + foldername + "'"+" is already present in "+location+"; proceeding to next step...")
     print
     location = location + "/" + foldername
-    return location #since modification above; also because folder is to be accessed in the next step
+    return location   # since modification above; also because folder is to be accessed in the next step
+
 
 def open_folder(location):
     """Opens the folder at the location; works only for Windows, Mac, Linux"""
-    platforms=['win32','linux2','darwin']
-    current_platform=sys.platform
+    platforms = ['win32', 'linux2', 'darwin']
+    current_platform = sys.platform
     if current_platform not in platforms:
         return
-    query = get_user_choice("Do you wish to view the folder?", ['y','n'])
-    if query=='y':
-        #linux
-        if current_platform=='linux2':
+    query = get_user_choice("Do you wish to view the folder?", ['y', 'n'])
+    if query == 'y':
+        # linux
+        if current_platform == 'linux2':
             os.system('xdg-open "%s"' % location)
-        #mac
-        elif current_platform=='darwin':
+        # mac
+        elif current_platform == 'darwin':
             os.system('open "%s"' % location)
-        #windows
-        elif current_platform=='win32':
+        # windows
+        elif current_platform == 'win32':
             os.startfile(location)
         return
 
@@ -118,38 +127,36 @@ if __name__ == "__main__":
     print
     d = {}
 
-    #asking user to enter location to save files
-    choice = get_user_choice("Save images in current working directory? (a new folder will be created in current directory)", ['y','n'])
+    # asking user to enter location to save files
+    choice = get_user_choice("Save images in current working directory? (a new folder will be created in current directory)", ['y', 'n'])
     if choice.lower() == 'y':
-        location = CWD #storing images in current working directory (default)
+        location = CWD  # storing images in current working directory (default)
     elif choice.lower() == 'n':
-        #asking user for entering directory
+        # asking user for entering directory
         location = input("Enter a directory to save images (a new folder will be created in the directory mentioned):")
         while not os.path.isdir(location):
             location = input("Not a valid directory, please enter again:")
-    #make new folder called 'Amul Topicals' in the directory; files will be stored in this folder
+    # make new folder called 'Amul Topicals' in the directory; files will be stored in this folder
     location = make_folder_in_directory(location, 'Amul Topicals')
 
-    
     # Take users choice of the form of download required.
-    choice = get_user_choice("\nHow would you like to download the topicals?\n1.Particular Year Topicals Only\n2.All Topicals Yearwise\n",['1','2'])
+    choice = get_user_choice("\nHow would you like to download the topicals?\n1.Particular Year Topicals Only\n2.All Topicals Yearwise\n", ['1', '2'])
 
     c = 'y'
-    while str(c) == 'y' and choice == str(1): 
-        #New user chosen year images only
-        user_catered=False;
+    while str(c) == 'y' and choice == str(1):
+        # New user chosen year images only
+        user_catered = False
         while user_catered == False:
             print("\nEnter year of the required topicals: ")
             year_input = int(input())
-            url="?s="+str(year_input)
-            year_available=False
+            url = "?s = " + str(year_input)
+            year_available = False
 
-            #Checking whether entered Year is available in amul topical website
-            for name,u in sorted(year_urls.items()):
+            # Checking whether entered Year is available in amul topical website
+            for name, u in sorted(year_urls.items()):
                 if str(u) == str(url):
                     year_available = True
                     break
-                    
             if year_available:
                 try:
                     year_page = fetch_url(BASE_URL+"?s="+str(year_input))
@@ -157,20 +164,19 @@ if __name__ == "__main__":
                 except:
                     print("\nUnknown Error occured! Kindly check network connection.")
                     exit(0)
-                user_catered=True
+                user_catered = True
             else:
                 print("\nTopicals for the entered year is not available!")
-                user_catered=False
-        c = get_user_choice("Would you like to download more topicals? ",['y','n'])
+                user_catered = False
+        c = get_user_choice("Would you like to download more topicals? ", ['y', 'n'])
 
     if choice == str(2):
         # Old method of one by one downloading each years images upon user choice y/n
         for name, url in sorted(year_urls.items()):
             year_page = fetch_url(BASE_URL + url)
-            per_year = get_year_topicals(year_page,location)
+            per_year = get_year_topicals(year_page, location)
             d[url[3:]] = per_year
         json_data = json.dumps(d, sort_keys=True, indent=4, separators=(',', ': '))
 
-
-    #if user wants to view folder right away
+    # if user wants to view folder right away
     open_folder(location)
